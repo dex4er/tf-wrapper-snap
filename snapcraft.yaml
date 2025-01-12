@@ -1,0 +1,53 @@
+name: tf-wrapper
+version: 0.1.0
+title: tf wrapper
+summary: Less verbose and more shell-friendly Terraform
+description: |
+  The original Terraform is abusively oververbosed. The `tf` wrapper makes
+  Terraform more CLI-friendly:
+
+  - removes unnecessary output
+  - adds own colored progress indicator
+  - provides an extra compact mode
+  - allows to use of multiple arguments when original command doesn't support it
+  - adds automatically quotes for indexed resources (`xargs` friendly)
+  - generates a log file when `TF_OUTPUT_PATH` environment variable is used
+icon: icon.png
+base: bare
+
+grade: stable
+confinement: strict
+
+architectures:
+  - build-on: amd64
+    run-on: amd64
+  - build-on: arm64
+    run-on: arm64
+
+parts:
+  freelens:
+    plugin: dump
+    source:
+      - to amd64: https://github.com/dex4er/tf/releases/download/v2.11.0/tf-linux-amd64
+      - to arm64: https://github.com/dex4er/tf/releases/download/v2.11.0/tf-linux-arm64
+
+plugs:
+  dot-mise:
+    interface: personal-files
+    read:
+      - $HOME/.config/mise
+      - $HOME/.local/share/mise
+  dot-terraform:
+    interface: personal-files
+    write:
+      - $HOME/.terraform.d
+      - $HOME/.terraformrc
+
+apps:
+  tf-wrapper:
+    command: tf-wrapper
+    aliases:
+      - tf
+    plugs:
+      - dot-mise
+      - dot-terraform
