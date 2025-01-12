@@ -1,5 +1,5 @@
 name: tf-wrapper
-version: 0.1.0
+version: 2.11.0 # datasource=github-releases depName=dex4er/tf
 title: tf wrapper
 summary: Less verbose and more shell-friendly Terraform
 description: |
@@ -14,40 +14,28 @@ description: |
   - generates a log file when `TF_OUTPUT_PATH` environment variable is used
 icon: icon.png
 base: bare
+build-base: core24
 
 grade: stable
-confinement: strict
+confinement: classic
 
-architectures:
-  - build-on: amd64
-    run-on: amd64
-  - build-on: arm64
-    run-on: arm64
+platforms:
+  amd64:
+  arm64:
 
 parts:
-  freelens:
+  tf:
     plugin: dump
-    source:
-      - to amd64: https://github.com/dex4er/tf/releases/download/v2.11.0/tf-linux-amd64
-      - to arm64: https://github.com/dex4er/tf/releases/download/v2.11.0/tf-linux-arm64
-
-plugs:
-  dot-mise:
-    interface: personal-files
-    read:
-      - $HOME/.config/mise
-      - $HOME/.local/share/mise
-  dot-terraform:
-    interface: personal-files
-    write:
-      - $HOME/.terraform.d
-      - $HOME/.terraformrc
+    source-type: file
+    source: https://github.com/dex4er/tf/releases/download/v$SNAPCRAFT_PROJECT_VERSION/tf-linux-$CRAFT_ARCH_BUILD_FOR
+    organize:
+      tf-linux-$CRAFT_ARCH_BUILD_FOR: tf-wrapper
+    override-pull: |
+      snapcraftctl pull
+      chmod +x $CRAFT_PART_SRC/*
 
 apps:
   tf-wrapper:
     command: tf-wrapper
     aliases:
       - tf
-    plugs:
-      - dot-mise
-      - dot-terraform
