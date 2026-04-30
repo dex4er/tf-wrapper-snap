@@ -20,8 +20,8 @@ grade: stable
 confinement: classic
 
 platforms:
-  amd64:
-  arm64:
+  amd64: null
+  arm64: null
 
 parts:
   tf:
