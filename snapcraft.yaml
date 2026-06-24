@@ -1,5 +1,5 @@
 name: tf-wrapper
-version: 2.12.1 # datasource=github-releases depName=dex4er/tf
+version: 2.14.0 # datasource=github-releases depName=dex4er/tf
 title: tf wrapper
 summary: Less verbose and more shell-friendly Terraform
 description: |
