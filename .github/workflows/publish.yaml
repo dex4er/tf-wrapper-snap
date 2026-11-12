@@ -1,0 +1,72 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - icon.png
+      - snapcraft.yaml
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+# A newer push must not release to stable before an older one finishes.
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runs-on: ubuntu-26.04
+          - runs-on: ubuntu-26.04-arm
+
+    runs-on: ${{ matrix.runs-on }}
+    environment: publishing
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Build snap
+        id: build
+        uses: snapcore/action-build@v1
+
+      - name: Install snap
+        run: sudo snap install --dangerous --classic ${{ steps.build.outputs.snap }}
+
+      - name: Check snap
+        run: snap info --verbose tf-wrapper
+
+      - name: Publish snap
+        uses: snapcore/action-publish@v1
+        env:
+          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "true"
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
+        with:
+          snap: ${{ steps.build.outputs.snap }}
+          release: candidate
+
+  promote:
+    name: Promote candidate to stable
+
+    needs: publish
+
+    runs-on: ubuntu-26.04
+    environment: publishing
+
+    steps:
+      - name: Install snapcraft
+        run: sudo snap install snapcraft --classic
+
+      - name: Promote candidate to stable
+        run: snapcraft promote tf-wrapper --from-channel candidate --to-channel stable --yes
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
