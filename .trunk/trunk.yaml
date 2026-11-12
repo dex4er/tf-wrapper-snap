@@ -2,7 +2,7 @@
 # To learn more about the format of this file, see https://docs.trunk.io/reference/trunk-yaml
 version: 0.1
 cli:
-  version: 1.25.0
+  version: 1.29.0
 # actionlint comes from the maintained fork of kjanat, which continues the
 # releases of rhysd/actionlint after 1.7.12 with the same names of the files,
 # where the plugin downloads them from rhysd/actionlint.
@@ -25,7 +25,7 @@ downloads:
 plugins:
   sources:
     - id: trunk
-      ref: v1.8.0
+      ref: v1.11.0
       uri: https://github.com/trunk-io/plugins
 # Many linters and tools depend on runtimes - configure them here. (https://docs.trunk.io/runtimes)
 runtimes:
@@ -80,9 +80,9 @@ lint:
     # Migrate migrates biome.jsonc and formats the files for the new version
     - biome@2.6.6! # datasource=npm depName=@biomejs/biome
     - git-diff-check
-    - oxipng@10.1.1
-    - renovate@43.150.0
-    - trufflehog@3.95.2
+    - oxipng@10.2.1
+    - renovate@44.236.2
+    - trufflehog@3.99.8
     # yamllint checks what Biome does not, as the duplicated keys and the
     # values that YAML 1.1 reads otherwise
     - yamllint@1.38.0
