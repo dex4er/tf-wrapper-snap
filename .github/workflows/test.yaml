@@ -1,9 +1,9 @@
 name: Test
 
 on:
-  push:
+  pull_request:
     branches:
-      - main
+      - "**"
     paths-ignore:
       - .editorconfig
       - .gitignore
@@ -12,9 +12,6 @@ on:
       - LICENSE
       - README.md
       - biome.jsonc
-  pull_request:
-    branches:
-      - "**"
   workflow_dispatch: {}
 
 permissions:
