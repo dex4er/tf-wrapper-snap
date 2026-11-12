@@ -2,19 +2,19 @@ name: Test
 
 on:
   push:
-    branches-ignore:
-      - automated/*
-      - renovate/*
+    branches:
+      - main
     paths-ignore:
       - .editorconfig
       - .gitignore
-      - .markdownlint.yaml
+      - .renovaterc.json
       - .trunk/**
       - LICENSE
       - README.md
+      - biome.jsonc
   pull_request:
     branches:
-      - main
+      - "**"
   workflow_dispatch: {}
 
 permissions:
