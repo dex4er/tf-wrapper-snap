@@ -8,10 +8,11 @@ on:
     paths-ignore:
       - .editorconfig
       - .gitignore
-      - .markdownlint.yaml
+      - .renovaterc.json
       - .trunk/**
       - LICENSE
       - README.md
+      - biome.jsonc
   pull_request:
     branches:
       - main

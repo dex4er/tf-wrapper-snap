@@ -16,20 +16,74 @@ runtimes:
     - python@3.14.4
 # This is the section where you manage your linters. (https://docs.trunk.io/check/configuration)
 lint:
+  definitions:
+    # Biome formats and lints JSON, Markdown and YAML, with biome.jsonc.
+    # parse_regex is matched against the whole output of a batch, so `^` needs
+    # `(?m)` to match at every line; without it Trunk reports only the first
+    # issue that Biome prints. Trunk runs Biome on a copy of the files in a
+    # sandbox outside the repository, with a copy of biome.jsonc of
+    # direct_configs. The sandbox has no .gitignore, which vcs.useIgnoreFile
+    # reads, so the commands turn it off, as Trunk applies .gitignore itself,
+    # and --no-errors-on-unmatched passes a file that biome.jsonc leaves out.
+    - name: biome
+      direct_configs:
+        - biome.jsonc
+      files:
+        - json
+        - markdown
+        - yaml
+      commands:
+        - output: regex
+          success_codes:
+            - 0
+            - 1
+          batch: true
+          cache_results: false
+          name: lint
+          parse_regex: (?m)^::(?P<severity>.*) title=(?P<code>[^,]+),file=(?P<path>[^,]+),line=(?P<line>[^,]+),endLine=[^,]+,col=(?P<col>[^,]+),endColumn=[^:]+::(?P<message>.*)
+          read_output_from: stdout
+          run: biome check --vcs-use-ignore-file=false --reporter=github --no-errors-on-unmatched ${target}
+          run_from: ${root_or_parent_with(biome.jsonc)}
+        - output: regex
+          success_codes:
+            - 0
+          batch: true
+          cache_results: false
+          formatter: true
+          name: fmt
+          parse_regex: (?m)^::(?P<severity>.*) title=(?P<code>[^,]+),file=(?P<path>[^,]+),line=(?P<line>[^,]+),endLine=[^,]+,col=(?P<col>[^,]+),endColumn=[^:]+::(?P<message>.*)
+          read_output_from: stdout
+          run: biome format --vcs-use-ignore-file=false --reporter=github --write --no-errors-on-unmatched ${target}
+          run_from: ${root_or_parent_with(biome.jsonc)}
+      run_timeout: 1m
   enabled:
     - actionlint@1.7.12
+    # Renovate bumps it, which the ! keeps from trunk upgrade, and Biome
+    # Migrate migrates biome.jsonc and formats the files for the new version
+    - biome@2.6.6! # datasource=npm depName=@biomejs/biome
     - git-diff-check
-    - markdownlint@0.48.0
     - oxipng@10.1.1
-    - prettier@3.8.3
     - renovate@43.150.0
     - trufflehog@3.95.2
-    - yamlfmt@0.21.0
+    # yamllint checks what Biome does not, as the duplicated keys and the
+    # values that YAML 1.1 reads otherwise
     - yamllint@1.38.0
   disabled:
     - checkov
     - grype
+    # markdownlint: Biome formats Markdown and has its rules that are not about
+    # formatting
+    - markdownlint
     - osv-scanner
+    # prettier, yamlfmt: Biome formats JSON, Markdown and YAML
+    - prettier
+    - yamlfmt
+  ignore:
+    # Rewritten by trunk upgrade
+    - linters:
+        - biome
+      paths:
+        - .trunk/trunk.yaml
 actions:
   enabled:
     - trunk-announce
