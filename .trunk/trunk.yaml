@@ -93,6 +93,7 @@ lint:
     # formatting
     - markdownlint
     - osv-scanner
+    - pinact
     # prettier, yamlfmt: Biome formats JSON, Markdown and YAML
     - prettier
     - yamlfmt
