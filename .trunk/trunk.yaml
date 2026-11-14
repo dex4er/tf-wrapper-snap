@@ -81,8 +81,8 @@ lint:
     - biome@2.6.7! # datasource=npm depName=@biomejs/biome
     - git-diff-check
     - oxipng@10.2.1
-    - renovate@44.236.2
-    - trufflehog@3.99.8
+    - renovate@44.239.1
+    - trufflehog@3.99.9
     # yamllint checks what Biome does not, as the duplicated keys and the
     # values that YAML 1.1 reads otherwise
     - yamllint@1.38.0
